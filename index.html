@@ -1,0 +1,263 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SLO Error Budget Calculator</title>
+<link rel="canonical" href="https://opshubs.space/tools/slo-error-budget-calculator/">
+<style>body{max-width:960px;margin:24px auto;padding:0 16px;background:#fff}</style>
+</head>
+<body>
+<h1 style="font-family:system-ui,sans-serif">SLO Error Budget Calculator</h1>
+<p style="font-family:system-ui,sans-serif">Online version with a full explanation: <a href="https://opshubs.space/tools/slo-error-budget-calculator/">https://opshubs.space/tools/slo-error-budget-calculator/</a></p>
+<div id="ohslo" class="ohslo">
+<style>
+.ohslo{--o-ink:var(--wp--preset--color--contrast,#1a1a1a);--o-mut:var(--wp--preset--color--accent-4,#6b6b6b);--o-acc:var(--wp--preset--color--accent-2,#b4532a);--o-bg:var(--wp--preset--color--accent-5,#f6f2ec);--o-line:rgba(26,26,26,.14);font-family:var(--wp--preset--font-family--fira-sans,system-ui,sans-serif);color:var(--o-ink);font-size:15px;line-height:1.5}
+.ohslo *{box-sizing:border-box}
+.ohslo-grid{display:grid;grid-template-columns:1fr;gap:24px}
+@media(min-width:900px){.ohslo-grid{grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr)}}
+.ohslo-card{background:var(--o-bg);border:1px solid var(--o-line);border-radius:6px;padding:20px;min-width:0}
+.ohslo h3{font-family:var(--wp--preset--font-family--literata,Georgia,serif);font-size:1.15rem;margin:0 0 12px}
+.ohslo h4{font-size:.8rem;text-transform:uppercase;letter-spacing:.06em;color:var(--o-mut);margin:18px 0 6px}
+.ohslo fieldset{border:0;padding:0;margin:0 0 14px}
+.ohslo legend{font-weight:600;font-size:.8rem;text-transform:uppercase;letter-spacing:.06em;color:var(--o-mut);margin-bottom:6px;padding:0}
+.ohslo-row{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:10px}
+.ohslo-f{display:flex;flex-direction:column;flex:1 1 140px;min-width:0}
+.ohslo-f span{font-size:.85rem;margin-bottom:3px}
+.ohslo-f small{color:var(--o-mut);font-size:.75rem;margin-top:2px}
+.ohslo input,.ohslo select{font:inherit;padding:7px 9px;border:1px solid var(--o-line);border-radius:4px;background:#fff;color:var(--o-ink);width:100%}
+.ohslo input:focus,.ohslo select:focus{outline:2px solid var(--o-acc);outline-offset:0}
+.ohslo-chips{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 2px}
+.ohslo-chips button{font:inherit;font-size:.8rem;border:1px solid var(--o-line);background:#fff;border-radius:999px;padding:2px 10px;cursor:pointer;color:var(--o-ink)}
+.ohslo-chips button[aria-pressed="true"]{background:var(--o-ink);color:#fff;border-color:var(--o-ink)}
+.ohslo-big{font-family:var(--wp--preset--font-family--literata,Georgia,serif);font-size:1.9rem;line-height:1.2;margin:2px 0}
+.ohslo-sub{color:var(--o-mut);font-size:.85rem;margin:0 0 10px}
+.ohslo table{width:100%;border-collapse:collapse;font-size:.86rem;margin-bottom:8px}
+.ohslo th{text-align:left;font-weight:600;color:var(--o-mut);font-size:.75rem;text-transform:uppercase;letter-spacing:.04em;padding:5px 6px 5px 0;border-bottom:1px solid var(--o-line)}
+.ohslo td{padding:6px 6px 6px 0;border-bottom:1px solid var(--o-line);vertical-align:top}
+.ohslo td.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.ohslo-scroll{overflow-x:auto}
+.ohslo-status{border-radius:4px;padding:10px 14px;margin:6px 0 4px;font-weight:600}
+.ohslo-status small{display:block;font-weight:400;margin-top:2px}
+.ohslo-ok{background:#e6f2e9;color:#1e5b31}
+.ohslo-warn{background:#fbf0d9;color:#7a5200}
+.ohslo-bad{background:#f8e1dc;color:#8a2a12}
+.ohslo-tag{display:inline-block;font-size:.72rem;font-weight:600;text-transform:uppercase;border-radius:3px;padding:1px 6px}
+.ohslo-tag.page{background:#f8e1dc;color:#8a2a12}
+.ohslo-tag.ticket{background:#fbf0d9;color:#7a5200}
+.ohslo pre{background:#1a1a1a;color:#f6f2ec;padding:12px;border-radius:4px;font-family:var(--wp--preset--font-family--fira-code,monospace);font-size:.76rem;overflow-x:auto;margin:6px 0 4px;white-space:pre;max-height:360px}
+.ohslo-copy{font:inherit;font-size:.78rem;border:1px solid var(--o-line);background:#fff;border-radius:4px;padding:3px 10px;cursor:pointer}
+.ohslo-copy:hover{border-color:var(--o-acc);color:var(--o-acc)}
+</style>
+<div class="ohslo-grid">
+<form class="ohslo-card" id="ohslo-form" onsubmit="return false" aria-label="SLO inputs">
+<h3>Your SLO</h3>
+<fieldset>
+<legend>Objective</legend>
+<div class="ohslo-row">
+<label class="ohslo-f"><span>SLO target (%)</span><input id="ohslo-slo" type="number" min="1" max="99.9999" step="any" value="99.9"></label>
+<label class="ohslo-f"><span>Window</span><select id="ohslo-window"><option value="7">7 days</option><option value="28">28 days</option><option value="30" selected>30 days</option></select></label>
+</div>
+<div class="ohslo-chips" id="ohslo-chips" aria-label="Common targets"><button type="button" data-v="99">99%</button><button type="button" data-v="99.5">99.5%</button><button type="button" data-v="99.9">99.9%</button><button type="button" data-v="99.95">99.95%</button><button type="button" data-v="99.99">99.99%</button></div>
+</fieldset>
+<fieldset>
+<legend>Traffic &amp; current errors</legend>
+<div class="ohslo-row">
+<label class="ohslo-f"><span>Request rate (req/s)</span><input id="ohslo-rps" type="number" min="0" step="any" value="50"><small>Optional, for request budgets</small></label>
+<label class="ohslo-f"><span>Current error rate (%)</span><input id="ohslo-err" type="number" min="0" max="100" step="any" value="0.5"><small>Failed / total requests</small></label>
+</div>
+<div class="ohslo-row">
+<label class="ohslo-f"><span>Budget remaining (%)</span><input id="ohslo-rem" type="number" min="0" max="100" step="any" value="100"></label>
+</div>
+</fieldset>
+<fieldset>
+<legend>Prometheus metrics</legend>
+<div class="ohslo-row">
+<label class="ohslo-f"><span>Service name</span><input id="ohslo-svc" type="text" value="checkout-api" spellcheck="false"></label>
+</div>
+<div class="ohslo-row">
+<label class="ohslo-f"><span>All requests</span><input id="ohslo-total" type="text" value='http_requests_total{job="checkout-api"}' spellcheck="false"></label>
+</div>
+<div class="ohslo-row">
+<label class="ohslo-f"><span>Failed requests</span><input id="ohslo-errsel" type="text" value='http_requests_total{job="checkout-api",code=~"5.."}' spellcheck="false"></label>
+</div>
+</fieldset>
+</form>
+<div class="ohslo-card" aria-live="polite">
+<h3>Error budget</h3>
+<div class="ohslo-big" id="ohslo-budget"></div>
+<p class="ohslo-sub" id="ohslo-budget-sub"></p>
+<table><tbody id="ohslo-periods"></tbody></table>
+<h4>Burn rate right now</h4>
+<div id="ohslo-burn"></div>
+<h4>Multiwindow burn-rate alerts</h4>
+<div class="ohslo-scroll"><table><thead><tr><th>Severity</th><th>Budget spent</th><th>Windows</th><th class="n">Burn rate</th><th class="n">Error rate</th></tr></thead><tbody id="ohslo-tiers"></tbody></table></div>
+<h4>Prometheus rules</h4>
+<pre id="ohslo-rules"></pre>
+<button type="button" class="ohslo-copy" data-copy="rules">Copy</button>
+</div>
+</div>
+<script>
+// Alert tiers from the Google SRE Workbook (multiwindow, multi-burn-rate alerts): the share of
+// the error budget spent within the long window that should trigger the alert.
+var OHSLO_TIERS = [
+  { severity: 'page', budgetPct: 2, longH: 1, shortMin: 5 },
+  { severity: 'page', budgetPct: 5, longH: 6, shortMin: 30 },
+  { severity: 'ticket', budgetPct: 10, longH: 72, shortMin: 360 }
+];
+
+function ohsloCalc(i) {
+  var windowH = i.windowDays * 24;
+  var allowed = 1 - i.sloPct / 100;            // allowed error ratio
+  var budgetMin = windowH * 60 * allowed;      // downtime-equivalent minutes per window
+
+  var periods = [
+    { label: 'Per day', min: 24 * 60 * allowed },
+    { label: 'Per week', min: 7 * 24 * 60 * allowed },
+    { label: 'Per ' + i.windowDays + '-day window', min: budgetMin },
+    { label: 'Per year', min: 365 * 24 * 60 * allowed }
+  ];
+
+  var requests = i.reqPerSec > 0 ? i.reqPerSec * windowH * 3600 : 0;
+  var failedAllowed = requests * allowed;
+
+  var burnRate = allowed > 0 ? (i.errorRatePct / 100) / allowed : Infinity;
+  var remaining = Math.max(0, Math.min(100, i.remainingPct)) / 100;
+  // Hours until the remaining budget is gone at the current burn rate.
+  var hoursLeft = burnRate > 0 ? remaining * windowH / burnRate : Infinity;
+
+  var tiers = OHSLO_TIERS.map(function (t) {
+    var threshold = (t.budgetPct / 100) * windowH / t.longH;
+    return {
+      severity: t.severity,
+      budgetPct: t.budgetPct,
+      longH: t.longH,
+      shortMin: t.shortMin,
+      burnRate: threshold,
+      errorRatio: threshold * allowed,
+      // Time to exhaust a full budget at exactly the threshold burn rate.
+      exhaustH: windowH / threshold
+    };
+  });
+
+  return {
+    allowed: allowed,
+    budgetMin: budgetMin,
+    periods: periods,
+    requests: requests,
+    failedAllowed: failedAllowed,
+    burnRate: burnRate,
+    hoursLeft: hoursLeft,
+    tiers: tiers,
+    valid: i.sloPct > 0 && i.sloPct < 100 && i.windowDays > 0
+  };
+}
+
+(function () {
+  var $ = function (id) { return document.getElementById('ohslo-' + id); };
+  function num(id, d) { var v = parseFloat($(id).value); return isNaN(v) ? d : v; }
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+  function dur(min) {
+    if (!isFinite(min)) return 'never';
+    var s = Math.round(min * 60);
+    if (s < 60) return s + 's';
+    if (s < 3600) return Math.floor(s / 60) + 'm' + (s % 60 ? ' ' + (s % 60) + 's' : '');
+    if (s < 86400) return Math.floor(s / 3600) + 'h' + (Math.round(s % 3600 / 60) ? ' ' + Math.round(s % 3600 / 60) + 'm' : '');
+    var d = Math.floor(s / 86400), h = Math.round(s % 86400 / 3600);
+    if (h === 24) { d++; h = 0; }
+    return d + 'd' + (h ? ' ' + h + 'h' : '');
+  }
+  function count(n) {
+    if (n >= 1e9) return (n / 1e9).toFixed(2) + 'B';
+    if (n >= 1e6) return (n / 1e6).toFixed(2) + 'M';
+    if (n >= 1e4) return (n / 1e3).toFixed(1) + 'K';
+    return Math.round(n).toLocaleString('en-US');
+  }
+  function trim(x, d) { return parseFloat(x.toFixed(d)).toString(); }
+  function win(h) { return h % 24 === 0 && h >= 24 ? (h / 24) + 'd' : h + 'h'; }
+  function winMin(m) { return m % 60 === 0 ? win(m / 60) : m + 'm'; }
+
+  function rules(i, r) {
+    var svc = (i.svc || 'service').replace(/[^a-zA-Z0-9_-]/g, '-');
+    var lbl = '{slo="' + svc + '"}';
+    var wins = {};
+    r.tiers.forEach(function (t) { wins[win(t.longH)] = 1; wins[winMin(t.shortMin)] = 1; });
+    var order = ['5m', '30m', '1h', '6h', '3d'].filter(function (w) { return wins[w]; });
+    var y = 'groups:\n  - name: slo-' + svc + '\n    rules:\n';
+    order.forEach(function (w) {
+      y += '      - record: slo:error_ratio:rate' + w + '\n' +
+        '        expr: |\n          sum(rate(' + i.errSel + '[' + w + ']))\n          /\n          sum(rate(' + i.total + '[' + w + ']))\n' +
+        '        labels:\n          slo: ' + svc + '\n';
+    });
+    r.tiers.forEach(function (t) {
+      var thr = trim(t.burnRate, 4) + ' * ' + trim(r.allowed, 8);
+      var name = t.severity === 'page' ? (t.longH <= 1 ? 'FastBurn' : 'MediumBurn') : 'SlowBurn';
+      y += '      - alert: ' + svc.replace(/(^|[-_])(\w)/g, function (m, a, b) { return b.toUpperCase(); }) + 'ErrorBudget' + name + '\n' +
+        '        expr: |\n' +
+        '          slo:error_ratio:rate' + win(t.longH) + lbl + ' > (' + thr + ')\n' +
+        '          and\n' +
+        '          slo:error_ratio:rate' + winMin(t.shortMin) + lbl + ' > (' + thr + ')\n' +
+        '        labels:\n          severity: ' + t.severity + '\n' +
+        '        annotations:\n          summary: "' + svc + ' is burning its ' + i.windowDays + '-day error budget at over ' + trim(t.burnRate, 2) + 'x"\n';
+    });
+    return y;
+  }
+
+  function read() {
+    return {
+      sloPct: num('slo', 99.9), windowDays: num('window', 30), reqPerSec: num('rps', 0),
+      errorRatePct: num('err', 0), remainingPct: num('rem', 100),
+      svc: $('svc').value.trim(), total: $('total').value.trim(), errSel: $('errsel').value.trim()
+    };
+  }
+
+  function render() {
+    var i = read();
+    Array.prototype.forEach.call($('chips').children, function (b) { b.setAttribute('aria-pressed', String(parseFloat(b.getAttribute('data-v')) === i.sloPct)); });
+    var r = ohsloCalc(i);
+    if (!r.valid) { $('budget').textContent = 'Enter an SLO between 0 and 100%'; return; }
+
+    $('budget').textContent = dur(r.budgetMin);
+    $('budget-sub').textContent = 'of full downtime per ' + i.windowDays + '-day window at ' + i.sloPct + '%' +
+      (r.requests > 0 ? ', or ' + count(r.failedAllowed) + ' failed requests out of ' + count(r.requests) : '') + '.';
+    $('periods').innerHTML = r.periods.map(function (p) { return '<tr><td>' + p.label + '</td><td class="n">' + dur(p.min) + '</td></tr>'; }).join('');
+
+    var b = r.burnRate, cls, head, sub;
+    if (b === 0) { cls = 'ohslo-ok'; head = 'No budget being spent'; sub = 'The error rate is zero.'; }
+    else if (b <= 1) { cls = 'ohslo-ok'; head = 'Burn rate ' + trim(b, 2) + 'x: sustainable'; sub = 'At this pace the budget lasts the whole window.'; }
+    else {
+      var page = r.tiers.filter(function (t) { return t.severity === 'page' && b >= t.burnRate; }).length > 0;
+      cls = page ? 'ohslo-bad' : 'ohslo-warn';
+      head = 'Burn rate ' + trim(b, 2) + 'x' + (page ? ': page-worthy' : ': burning faster than planned');
+      sub = (i.remainingPct < 100 ? 'The remaining ' + trim(i.remainingPct, 1) + '% of the budget' : 'A full budget') + ' runs out in ' + dur(r.hoursLeft * 60) + '.';
+    }
+    $('burn').innerHTML = '<div class="ohslo-status ' + cls + '">' + head + '<small>' + sub + '</small></div>';
+
+    $('tiers').innerHTML = r.tiers.map(function (t) {
+      return '<tr><td><span class="ohslo-tag ' + t.severity + '">' + t.severity + '</span></td><td>' + t.budgetPct + '% in ' + win(t.longH) +
+        '</td><td>' + win(t.longH) + ' &amp; ' + winMin(t.shortMin) + '</td><td class="n">' + trim(t.burnRate, 2) + 'x</td><td class="n">' + trim(t.errorRatio * 100, 4) + '%</td></tr>';
+    }).join('');
+    $('rules').textContent = rules(i, r);
+  }
+
+  $('form').addEventListener('input', render);
+  $('form').addEventListener('change', render);
+  $('chips').addEventListener('click', function (e) {
+    var v = e.target.getAttribute && e.target.getAttribute('data-v');
+    if (v) { $('slo').value = v; render(); }
+  });
+  document.getElementById('ohslo').addEventListener('click', function (e) {
+    var id = e.target.getAttribute && e.target.getAttribute('data-copy');
+    if (!id) return;
+    var text = $(id).textContent;
+    var done = function () { e.target.textContent = 'Copied'; setTimeout(function () { e.target.textContent = 'Copy'; }, 1500); };
+    if (navigator.clipboard) navigator.clipboard.writeText(text).then(done);
+    else { var t = document.createElement('textarea'); t.value = text; document.body.appendChild(t); t.select(); document.execCommand('copy'); t.remove(); done(); }
+  });
+  render();
+})();
+</script>
+</div>
+
+</body>
+</html>
